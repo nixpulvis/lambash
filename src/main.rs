@@ -17,7 +17,14 @@ fn main() {
     let add = λ!{m.λ!{n.λ!{f.λ!{x.γ!(m, γ!(f, γ!(n, γ!(f, x))))}}}};
     dbg!(&add);
 
-    dbg!(app!(app!(add, one), one));
+    let two = app!(succ, one);
+    dbg!(&two);
+    let three = app!(succ, two);
+    dbg!(&three);
+    let four = app!(succ, three);
+    dbg!(&four);
+
+    // dbg!(app!(app!(add, one), one));
 
     // TODO: Primitives
     // let leet = γ!(id, 1337);
