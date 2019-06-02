@@ -3,6 +3,7 @@
 A POSIX-like shell written for and using lambda calculus and it's derivatives.
 
 [Introductory Paper](http://www.cs.yale.edu/homes/hudak/CS201S08/lambda.pdf)
+[Lambda Calculus and Beyond](https://crypto.stanford.edu/~blynn/lambda)
 
 ```
 # This is a comment.
