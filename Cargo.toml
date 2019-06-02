@@ -1,7 +1,9 @@
 [package]
 name = "lambash"
+description = "A λ-calculus POSIX-like shell."
 version = "0.1.0"
 authors = ["Nathan Lilienthal <nathan@nixpulvis.com>"]
+license = "MIT"
 edition = "2018"
 
 [dependencies]
