@@ -1,29 +1,26 @@
 #![feature(non_ascii_idents, box_syntax)]
 
-mod ast;
-mod syntax;
+#[macro_use]
+extern crate lalrpop_lambda;
+
+use std::io::{self, BufRead, Write};
 
 fn main() {
-    let id = λ!{x.x};
-    dbg!(&id);
+    let stdin = io::stdin();
+    let mut stdout = io::stdout();
+    let parser = lalrpop_lambda::parse::ExpressionParser::new();
 
-    let zero = λ!{f.λ!{x.x}};
-    dbg!(&zero);
-    let one = λ!{f.λ!{x.γ!(f, x)}};
-    dbg!(&one);
+    write!(stdout, "> ");
+    stdout.flush();
 
-    let succ = λ!{n.λ!{f.λ!{x.γ!(f, γ!(n, γ!(f, x)))}}};
-    dbg!(&succ);
-    let add = λ!{m.λ!{n.λ!{f.λ!{x.γ!(m, γ!(f, γ!(n, γ!(f, x))))}}}};
-    dbg!(&add);
+    for line in stdin.lock().lines() {
+        if let Ok(line) = line {
+            if let Ok(expression) = parser.parse(&line) {
+                println!("{}", expression.normalize(false));
+            }
+        }
 
-    dbg!(app!(app!(add, one), one));
-
-    // TODO: Primitives
-    // let leet = γ!(id, 1337);
-    // dbg!(&leet);
-    // let inline = γ!(λ!{x.x}, 1337);
-    // dbg!(&inline);
-    // let inline = γ!(λ!{_x.1337}, ());
-    // dbg!(&inline);
+        write!(stdout, "> ");
+        stdout.flush();
+    }
 }
