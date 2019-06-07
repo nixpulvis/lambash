@@ -10,17 +10,25 @@ fn main() {
     let mut stdout = io::stdout();
     let parser = lalrpop_lambda::parse::ExpressionParser::new();
 
-    write!(stdout, "> ");
-    stdout.flush();
-
+    prompt(&mut stdout);
     for line in stdin.lock().lines() {
         if let Ok(line) = line {
             if let Ok(expression) = parser.parse(&line) {
-                println!("{}", expression.normalize(false));
+                println!("{} -> {}",
+                         expression,
+                         expression.normalize(false));
+            } else {
+                println!("err: parse failed");
             }
+        } else {
+            println!("err: reading line failed");
         }
 
-        write!(stdout, "> ");
-        stdout.flush();
+        prompt(&mut stdout);
     }
+}
+
+fn prompt(stdout: &mut io::Stdout) {
+    write!(stdout, "> ").expect("failed to write");
+    stdout.flush().expect("failed to flush");
 }
