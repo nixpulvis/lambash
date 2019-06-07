@@ -1,8 +1,21 @@
 # `lambash`
 
+Run the shell with `cargo run`.
+
+### λ Normalization
+
+```sh
+> (\x.x) a
+= a
+> (\f.\x.(f x)) a b
+= (((λf.(λx.(f x))) a) b) -> (a b)
+```
+
+### Next Steps
+
 A POSIX-like shell written for and using lambda calculus and it's derivatives.
 
-```
+```sh
 # This is a comment.
 
 # Abstraction (function)
