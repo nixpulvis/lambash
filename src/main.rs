@@ -14,9 +14,10 @@ fn main() {
     for line in stdin.lock().lines() {
         if let Ok(line) = line {
             if let Ok(expression) = parser.parse(&line) {
-                println!("{} -> {}",
+                println!("{}\n-> {}\n-η {}\n",
                          expression,
-                         expression.normalize(false));
+                         expression.normalize(false),
+                         expression.normalize(true));
             } else {
                 println!("err: parse failed");
             }
