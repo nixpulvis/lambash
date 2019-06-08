@@ -14,15 +14,21 @@ fn main() {
     for line in stdin.lock().lines() {
         if let Ok(line) = line {
             if let Ok(expression) = parser.parse(&line) {
-                println!("{}\n-> {}\n-η {}\n",
+                println!("{}\n-> {}\n-η {}",
                          expression,
                          expression.normalize(false),
                          expression.normalize(true));
+
+                // if let Some(n) = Option<u64>::from(expression.clone()) {
+                let n = u64::from(expression.clone());
+                if n > 0 {
+                    println!("=u64 {}\n", n);
+                }
             } else {
-                println!("err: parse failed");
+                println!("err: parse failed\n");
             }
         } else {
-            println!("err: reading line failed");
+            println!("err: reading line failed\n");
         }
 
         prompt(&mut stdout);
