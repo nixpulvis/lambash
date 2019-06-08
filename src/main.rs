@@ -1,6 +1,4 @@
 #![feature(non_ascii_idents, box_syntax)]
-
-#[macro_use]
 extern crate lalrpop_lambda;
 
 use std::io::{self, BufRead, Write};
@@ -14,7 +12,7 @@ fn main() {
     for line in stdin.lock().lines() {
         if let Ok(line) = line {
             if let Ok(expression) = parser.parse(&line) {
-                println!("{}\n-> {}\n-η {}",
+                println!("-p {}\n-> {}\n-η {}",
                          expression,
                          expression.normalize(false),
                          expression.normalize(true));
@@ -23,6 +21,8 @@ fn main() {
                 let n = u64::from(expression.clone());
                 if n > 0 {
                     println!("=u64 {}\n", n);
+                } else {
+                    println!();
                 }
             } else {
                 println!("err: parse failed\n");
@@ -36,6 +36,6 @@ fn main() {
 }
 
 fn prompt(stdout: &mut io::Stdout) {
-    write!(stdout, "> ").expect("failed to write");
+    write!(stdout, "<- ").expect("failed to write");
     stdout.flush().expect("failed to flush");
 }
