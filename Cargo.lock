@@ -280,7 +280,7 @@ dependencies = [
 
 [[package]]
 name = "lalrpop-lambda"
-version = "0.2.0"
+version = "0.3.0"
 dependencies = [
  "lalrpop 0.17.0 (registry+https://github.com/rust-lang/crates.io-index)",
  "lalrpop-util 0.17.0 (registry+https://github.com/rust-lang/crates.io-index)",
@@ -296,7 +296,7 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 name = "lambash"
 version = "0.1.0"
 dependencies = [
- "lalrpop-lambda 0.2.0",
+ "lalrpop-lambda 0.3.0",
 ]
 
 [[package]]
