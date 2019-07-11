@@ -2,11 +2,13 @@
 extern crate lalrpop_lambda;
 
 use std::io::{self, BufRead, Write};
+use lalrpop_lambda::parse::ExpressionParser;
+use lalrpop_lambda::Strategy;
 
 fn main() {
     let stdin = io::stdin();
     let mut stdout = io::stdout();
-    let parser = lalrpop_lambda::parse::ExpressionParser::new();
+    let parser = ExpressionParser::new();
 
     prompt(&mut stdout);
     for line in stdin.lock().lines() {
@@ -14,8 +16,8 @@ fn main() {
             if let Ok(expression) = parser.parse(&line) {
                 println!("-p {}\n-> {}\n-η {}",
                          expression,
-                         expression.normalize(false),
-                         expression.normalize(true));
+                         expression.normalize(&Strategy::Applicative(false)),
+                         expression.normalize(&Strategy::Applicative(true)));
 
                 // if let Some(n) = Option<u64>::from(expression.clone()) {
                 let n = u64::from(expression.clone());
