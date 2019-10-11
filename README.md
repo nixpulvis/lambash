@@ -5,29 +5,39 @@ Run the shell with `cargo run`.
 ### λ Normalization
 
 ```sh
-> (\x.x) a
-= a
-> (\f.\x.(f x)) a b
-= (((λf.(λx.(f x))) a) b) -> (a b)
-```
+(\x.x) 1
+-p ((λx.x) 1)
+-> 1
+-η 1
 
-### Next Steps
+\x.f x
+-p (λx.(f x))
+-> (λx.(f x))
+-η f
+```
 
 A POSIX-like shell written for and using lambda calculus and it's derivatives.
 
 ```sh
-# This is a comment.
-
-# Abstraction (function)
-λx.x
-λx.x
-
-# Application
-λx.x 1
+# Application (foreground call).
+(λx.x) echo 1
 1
+(\x.y) 2
+y: command not found
 
-\x.x 2
-2
+# Abstraction (background call).
+\.ping localhost
+
+# TODO
+λx.x
+λx.y
+
+```
+
+### Next Steps
+
+```
+# This is a comment.
 
 # Definition (syntactic)
 id := \x.x
