@@ -4,7 +4,7 @@ extern crate lalrpop_lambda;
 use std::io::{self, BufRead, Write};
 use std::ffi::CString;
 use lalrpop_lambda::parse::ExpressionParser;
-use lalrpop_lambda::{Expression, Variable, Application, Strategy};
+use lalrpop_lambda::{Expression, Variable, Application, Abstraction, Strategy};
 use oursh::job::Job;
 
 fn main() {
@@ -21,35 +21,73 @@ fn main() {
                          expression.normalize(&Strategy::Applicative(false)),
                          expression.normalize(&Strategy::Applicative(true)));
 
-                // if let Some(n) = Option<u64>::from(expression.clone()) {
-                let n = u64::from(expression.clone());
-                if n > 0 {
-                    println!("=u64 {}\n", n);
-                } else {
-                    println!();
-                }
+                // TODO: if let Some(n) = Option<u64>::from(expression.clone())
+                // let n = u64::from(expression.clone());
+                // if n > 0 {
+                //     println!("=u64 {}", n);
+                // }
 
-                let e = expression.normalize(&Strategy::Applicative(false));
-                match e {
-                    Expression::Var(Variable(v, None)) => {
-                        let program = CString::new(format!("{}", v)).unwrap();
-                        Job::new(vec![program]).run().unwrap();
-                    },
-                    Expression::App(Application(p, a)) => {
-                        let program = CString::new(format!("{}", p)).unwrap();
-                        let arg = CString::new(format!("{}", a)).unwrap();
-                        Job::new(vec![program, arg]).run().unwrap();
-                    },
-                    _ => {},
-                }
+                expression.normalize(&Strategy::Applicative(true)).run();
             } else {
-                println!("err: parse failed\n");
+                println!("err: parse failed");
             }
         } else {
             println!("err: reading line failed\n");
         }
 
         prompt(&mut stdout);
+    }
+}
+
+trait Run {
+    fn run(self);
+}
+
+impl Run for Expression {
+    fn run(self) {
+        match self {
+            // Running a variable is like `ls` or `~/foo`.
+            Expression::Var(Variable(v, None)) => {
+                let program = CString::new(format!("{}", v)).unwrap();
+                Job::new(vec![program]).run().unwrap();
+            },
+            Expression::Var(Variable(_, Some(_))) => {
+                unimplemented!();
+            },
+            // Applying an expression is like `(ls -la)` or `date --iso-8601`.
+            // TODO: `(echo -n date)` vs `(echo -n (date))`
+            // NOTE: x y z = ((x y) z), 1 2 3 4 = (((1 2) 3) 4)
+            e @ Expression::App(_) => {
+                // TODO: match for subshells?
+                Job::new(e.args()).run().unwrap();
+            },
+            Expression::Abs(Abstraction(_id, body)) => {
+                // TODO: Job::new(body.args()).run_background(id).unwrap();
+                Job::new(body.args()).run_background().unwrap();
+            },
+        }
+    }
+}
+
+trait Args {
+    fn args(self) -> Vec<CString>;
+}
+
+impl Args for Expression {
+    fn args(self) -> Vec<CString> {
+        match self {
+            // Running a variable is like `ls` or `~/foo`.
+            Expression::Var(Variable(v, None)) => {
+                let v = CString::new(format!("{}", v)).unwrap();
+                vec![v]
+            },
+            Expression::App(Application(e1, e2)) => {
+                let left = (*e1).args();
+                let right = (*e2).args();
+                [&left[..], &right[..]].concat()
+            },
+            _ => vec![],
+        }
     }
 }
 
