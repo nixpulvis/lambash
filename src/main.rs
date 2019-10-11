@@ -92,6 +92,6 @@ impl Args for Expression {
 }
 
 fn prompt(stdout: &mut io::Stdout) {
-    write!(stdout, "<- ").expect("failed to write");
+    write!(stdout, "¤ ").expect("failed to write");
     stdout.flush().expect("failed to flush");
 }
