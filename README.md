@@ -2,6 +2,15 @@
 
 Run the shell with `cargo run`.
 
+```
+\f.((\x.x) date) -R -u f
+
+-p (λf.(((((λx.x) date) -R) -u) f))
+-> (λf.(((date -R) -u) f))
+-η ((date -R) -u)
+Fri, 11 Oct 2019 22:28:09 +0000
+```
+
 ### λ Normalization
 
 ```sh
