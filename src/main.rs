@@ -4,7 +4,7 @@ extern crate lalrpop_lambda;
 use std::io::{self, BufRead, Write};
 use std::ffi::CString;
 use lalrpop_lambda::parse::ExpressionParser;
-use lalrpop_lambda::{Expression, Strategy};
+use lalrpop_lambda::{Expression, Variable, Application, Strategy};
 use oursh::job::Job;
 
 fn main() {
@@ -29,10 +29,16 @@ fn main() {
                     println!();
                 }
 
-                match expression.normalize(&Strategy::Applicative(false)) {
-                    Expression::Var(v) => {
+                let e = expression.normalize(&Strategy::Applicative(false));
+                match e {
+                    Expression::Var(Variable(v, None)) => {
                         let program = CString::new(format!("{}", v)).unwrap();
                         Job::new(vec![program]).run().unwrap();
+                    },
+                    Expression::App(Application(p, a)) => {
+                        let program = CString::new(format!("{}", p)).unwrap();
+                        let arg = CString::new(format!("{}", a)).unwrap();
+                        Job::new(vec![program, arg]).run().unwrap();
                     },
                     _ => {},
                 }
