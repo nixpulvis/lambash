@@ -2,8 +2,10 @@
 extern crate lalrpop_lambda;
 
 use std::io::{self, BufRead, Write};
+use std::ffi::CString;
 use lalrpop_lambda::parse::ExpressionParser;
-use lalrpop_lambda::Strategy;
+use lalrpop_lambda::{Expression, Strategy};
+use oursh::job::Job;
 
 fn main() {
     let stdin = io::stdin();
@@ -25,6 +27,14 @@ fn main() {
                     println!("=u64 {}\n", n);
                 } else {
                     println!();
+                }
+
+                match expression.normalize(&Strategy::Applicative(false)) {
+                    Expression::Var(v) => {
+                        let program = CString::new(format!("{}", v)).unwrap();
+                        Job::new(vec![program]).run().unwrap();
+                    },
+                    _ => {},
                 }
             } else {
                 println!("err: parse failed\n");
