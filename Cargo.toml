@@ -6,5 +6,6 @@ edition = "2018"
 
 [dependencies]
 docopt = "*"
-lalrpop-lambda = { git = "https://github.com/nixpulvis/lalrpop-lambda" }
-oursh = { git = "https://github.com/nixpulvis/oursh" }
+lalrpop-lambda = { path = "../lalrpop-lambda" }
+oursh = { path = "../oursh" }
+nix = "0.13"

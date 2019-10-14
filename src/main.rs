@@ -6,6 +6,7 @@ use std::rc::Rc;
 use std::cell::RefCell;
 use std::ffi::CString;
 use docopt::Docopt;
+use nix::sys::wait::{WaitStatus};
 use lalrpop_lambda::parse::ExpressionParser;
 use lalrpop_lambda::{Expression, Variable, Application, Abstraction, Strategy};
 use oursh::repl::{
@@ -37,14 +38,32 @@ fn main() {
     let jobs: Rc<RefCell<Vec<(String, Job)>>> = Rc::new(RefCell::new(vec));
 
     let handler = move |line: &String| {
-        // TODO: Track changes and only display as needed.
-        for job in jobs.borrow_mut().iter_mut() {
-            println!("[{}]+ {:?}", job.0, job.1.status());
-        }
-        jobs.borrow_mut().retain(|job| !job.1.is_done());
+        jobs.borrow_mut().retain(|job| {
+            match job.1.status() {
+                Ok(WaitStatus::StillAlive) => {
+                    true
+                },
+                Ok(WaitStatus::Exited(pid, code)) => {
+                    println!("[{}]+\tExit({})\t{}", job.0, code, pid);
+                    false
+                },
+                Ok(WaitStatus::Signaled(pid, signal, _)) => {
+                    println!("[{}]+\t{}\t{}", job.0, signal, pid);
+                    false
+                },
+                Ok(_) => {
+                    println!("unhandled");
+                    true
+                },
+                Err(e) => {
+                    println!("err: {:?}", e);
+                    false
+                }
+            }
+        });
 
         if line == "" {
-            return Ok(())
+            return Ok(());
         }
 
         if let Ok(expression) = parser.parse(&line) {
@@ -102,7 +121,7 @@ impl Run for Expression {
                 let mut job = Job::new(body.args());
                 job.run_background().unwrap();
                 if let Some(pid) = job.pid() {
-                    println!("[{}] {}", id, pid)
+                    println!("[{}]\t{}", id, pid)
                 }
                 jobs.borrow_mut().push((format!("{}", id), job));
             },
