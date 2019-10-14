@@ -43,6 +43,10 @@ fn main() {
         }
         jobs.borrow_mut().retain(|job| !job.1.is_done());
 
+        if line == "" {
+            return Ok(())
+        }
+
         if let Ok(expression) = parser.parse(&line) {
             if args.get_bool("--verbose") {
                 println!("-p {}\n-> {}\n-η {}",
