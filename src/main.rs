@@ -102,9 +102,18 @@ impl Run for Expression {
         match self {
             // Running a variable is like `ls` or `~/foo`.
             Expression::Var(Variable(v, None)) => {
-                let program = CString::new(format!("{}", v)).unwrap();
-                let mut job = Job::new(vec![program]);
-                job.run().unwrap();
+                let program = format!("{}", v);
+                if program == "jobs" {
+                    for (id, job) in jobs.borrow().iter() {
+                        if let Some(pid) = job.pid() {
+                            println!("[{}]\t{}", id, pid)
+                        }
+                    }
+                } else {
+                    let args = vec![CString::new(program).unwrap()];
+                    let mut job = Job::new(args);
+                    job.run().unwrap();
+                }
             },
             Expression::Var(Variable(_, Some(_))) => {
                 unimplemented!();
