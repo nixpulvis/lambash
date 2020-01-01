@@ -34,8 +34,7 @@ fn main() {
     let parser = ExpressionParser::new();
 
     // Elementary job management.
-    let vec = vec![];
-    let jobs: Rc<RefCell<Vec<(String, Job)>>> = Rc::new(RefCell::new(vec));
+    let jobs: Rc<RefCell<Vec<(String, Job)>>> = Rc::new(RefCell::new(vec![]));
 
     let handler = move |line: &String| {
         jobs.borrow_mut().retain(|job| {
