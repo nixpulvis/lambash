@@ -8,4 +8,4 @@ edition = "2018"
 docopt = "*"
 lalrpop-lambda = { path = "../lalrpop-lambda" }
 oursh = { path = "../oursh" }
-nix = "0.13"
+nix = "*"
