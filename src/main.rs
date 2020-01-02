@@ -111,7 +111,7 @@ impl Run for Expression {
                 } else {
                     let args = vec![CString::new(program).unwrap()];
                     let mut job = Job::new(args);
-                    job.run().unwrap();
+                    job.fork_and_wait().unwrap();
                 }
             },
             Expression::Var(Variable(_, Some(_))) => {
@@ -123,11 +123,11 @@ impl Run for Expression {
             e @ Expression::App(_) => {
                 // TODO: match for subshells?
                 let mut job = Job::new(e.args());
-                job.run().unwrap();
+                job.fork_and_wait().unwrap();
             },
             Expression::Abs(Abstraction(id, body)) => {
                 let mut job = Job::new(body.args());
-                job.run_background().unwrap();
+                job.fork().unwrap();
                 if let Some(pid) = job.pid() {
                     println!("[{}]\t{}", id, pid)
                 }
